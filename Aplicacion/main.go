@@ -149,6 +149,6 @@ func leerRam() string{
 	ret := fmt.Sprintf("\"memtotal\":%d, \"memfree\": %d,\"memavailible\": %d " , mtotal , mfree , mdisp)
 
 	fmt.Println(ret)
-
+ 
 	return ret
 }
