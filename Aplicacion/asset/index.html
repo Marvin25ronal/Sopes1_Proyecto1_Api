@@ -6,12 +6,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link rel="stylesheet" href="main.css">
+  <script src="Chart.js"></script>
 </head>
 
 <body>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+  <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -28,15 +30,189 @@
           <a class="nav-link" href="listado.html">Listado <span class="sr-only">(current)</span></a>
         </li>
       </ul>
-
     </div>
   </nav>
 
+  <h1 align="center" class="display-1">Monitoreo</h1>
 
-  <div class="container mt-5">
+  <div id="cont" class="container mt-5">
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Memoria Free GB</th>
+          <th scope="col">Memoria Available GB</th>
+          <th scope="col">Memoria Total GB</th>
+          <th scope="col">Memoria utilizada GB</th>
+          <th scope="col">Uso CPU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ memorialibre }}</td>
+          <td>{{memoriadisponible}}</td>
+          <td>{{memoriatotal}}</td>
+          <td>{{memoriatotal-memorialibre}}</td>
+          <td>{{ cpu }}%</td>
+        </tr>
+      </tbody>
+    </table>
+    <button @click="refrescarproceso" onclick="bm()">Refrescar</button>
+      <table>
+        <tr>
+          <td>
+            <canvas id="graficacpu" width="400" height="400"></canvas>
+          </td>
+          <td>
+            <canvas id="graficamemoriadisponible" width="400" height="400"></canvas>
+          </td>
+          <td>
+            <canvas id="graficamemorialibre" width="400" height="400"></canvas>
+          </td>
+        </tr>
+      </table>
+      
+     
     
+
   </div>
+
   <script src="main.js"></script>
+  <script>
+    function bm(){
+      for(let i=0;i<vm.arraycpu.length;i++){
+        chart1.data.datasets[0].data[i]=vm.arraycpu[i];
+      }
+      for(let i=0;i<vm.arraymemoriadisponible.length;i++){
+        chart2.data.datasets[0].data[i]=vm.arraymemoriadisponible[i];
+      }
+      for(let i=0;i<vm.arraymemorialibre.length;i++){
+        chart3.data.datasets[0].data[i]=vm.arraymemorialibre[i]*1000000;
+      }
+      chart1.update();
+      chart2.update();
+      chart3.update();
+    }
+    let micanvas = document.getElementById('graficacpu').getContext("2d")
+    var chart1 = new Chart(micanvas, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: 'Grafica de porcentaje del CPU ',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        responsive: false
+      }
+    })
+
+    let micanvas2 = document.getElementById('graficamemoriadisponible').getContext("2d")
+    var chart2 = new Chart(micanvas2, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: 'Grafica de Memoria disponible ',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        responsive: false
+      }
+    })
+
+
+
+
+    let micanvas3 = document.getElementById('graficamemorialibre').getContext("2d")
+    var chart3 = new Chart(micanvas3, {
+      type: 'line',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: 'Grafica de Memoria libre ',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        responsive: false
+      }
+    })
+
+  </script>
 </body>
 
 </html>

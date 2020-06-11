@@ -31,15 +31,13 @@ func main() {
 		s.SetContext(msg)
 		return "recv " + msg
 	})
-	server.OnEvent("/", "matar", func(s socketio.Conn, msg string) string {
-		log.Println(msg)
+	server.OnEvent("/", "getdatos", func(s socketio.Conn, msg string) string {
+		//log.Println(msg)
 		//rarchivos()
 		st1 := leerCpu()
 		st2 := leerRam()
-
 		st3 := fmt.Sprintf("{ %s %s }" , st1 , st2)
-		s.Emit("matado", st3)
-		
+		s.Emit("datos", st3)
 		return st3
 	})
 	
