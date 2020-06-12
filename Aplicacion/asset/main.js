@@ -47,6 +47,7 @@ var vm=new Vue({
         memoriatotal:0,
         memorialibre:0,
         arraymemorialibre:[],
+        arbol:[],
         procesos:[
             {
                 pdi:1,
@@ -66,6 +67,7 @@ var vm=new Vue({
             //this.cpu=5;
             console.log("mandando datos")
             socket.emit('getdatos',"datos")
-        }
+        },
+       
     }
 })

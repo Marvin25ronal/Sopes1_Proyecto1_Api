@@ -18,16 +18,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Graficas <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="#">CPU <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Ram <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="">Graficas <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="listado.html">Listado <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="arbol.html">Arbol</a>
         </li>
       </ul>
     </div>
@@ -57,45 +54,45 @@
       </tbody>
     </table>
     <!--<button @click="refrescarproceso" onclick="bm()">Refrescar</button> -->
-      <table>
-        <tr>
-          <td>
-            <canvas id="graficacpu" width="400" height="400"></canvas>
-          </td>
-          <td>
-            <canvas id="graficamemoriadisponible" width="400" height="400"></canvas>
-          </td>
-          <td>
-            <canvas id="graficamemorialibre" width="400" height="400"></canvas>
-          </td>
-        </tr>
-      </table>
-      
-     
-    
+    <table>
+      <tr>
+        <td>
+          <canvas id="graficacpu" width="400" height="400"></canvas>
+        </td>
+        <td>
+          <canvas id="graficamemoriadisponible" width="400" height="400"></canvas>
+        </td>
+        <td>
+          <canvas id="graficamemorialibre" width="400" height="400"></canvas>
+        </td>
+      </tr>
+    </table>
+
+
+
 
   </div>
 
   <script src="main.js"></script>
   <script>
 
-  setInterval('func()', 1000);
+    setInterval('func()', 1000);
 
-  function func(){
-    vm.refrescarproceso()
-   
-    bm();
-  }
+    function func() {
+      vm.refrescarproceso()
 
-    function bm(){
-      for(let i=0;i<vm.arraycpu.length;i++){
-        chart1.data.datasets[0].data[i]=vm.arraycpu[i];
+      bm();
+    }
+
+    function bm() {
+      for (let i = 0; i < vm.arraycpu.length; i++) {
+        chart1.data.datasets[0].data[i] = vm.arraycpu[i];
       }
-      for(let i=0;i<vm.arraymemoriadisponible.length;i++){
-        chart2.data.datasets[0].data[i]=vm.arraymemoriadisponible[i];
+      for (let i = 0; i < vm.arraymemoriadisponible.length; i++) {
+        chart2.data.datasets[0].data[i] = vm.arraymemoriadisponible[i];
       }
-      for(let i=0;i<vm.arraymemorialibre.length;i++){
-        chart3.data.datasets[0].data[i]=vm.arraymemorialibre[i]*1000000;
+      for (let i = 0; i < vm.arraymemorialibre.length; i++) {
+        chart3.data.datasets[0].data[i] = vm.arraymemorialibre[i] * 1000000;
       }
       chart1.update();
       chart2.update();
@@ -105,12 +102,12 @@
     var chart1 = new Chart(micanvas, {
       type: 'line',
       data: {
-        labels: [1,2,3,4,5],
+        labels: [1, 2, 3, 4, 5],
         datasets: [{
           label: 'Grafica de porcentaje del CPU ',
           data: [],
           backgroundColor: [
-          
+
             'rgba(255, 206, 86, 0.2)',
             'rgba(75, 192, 192, 0.2)',
             'rgba(153, 102, 255, 0.2)',
@@ -143,12 +140,12 @@
     var chart2 = new Chart(micanvas2, {
       type: 'line',
       data: {
-        labels: [1,2,3,4,5],
+        labels: [1, 2, 3, 4, 5],
         datasets: [{
           label: 'Grafica de Memoria disponible ',
           data: [],
           backgroundColor: [
-            
+
             'rgba(54, 162, 235, 0.2)',
             'rgba(255, 206, 86, 0.2)',
             'rgba(75, 192, 192, 0.2)',
@@ -185,7 +182,7 @@
     var chart3 = new Chart(micanvas3, {
       type: 'line',
       data: {
-        labels: [1,2,3,4,5],
+        labels: [1, 2, 3, 4, 5],
         datasets: [{
           label: 'Grafica de Memoria libre ',
           data: [],
