@@ -94,15 +94,14 @@
     }
     let micanvas = document.getElementById('graficacpu').getContext("2d")
     var chart1 = new Chart(micanvas, {
-      type: 'bar',
+      type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Blue', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
         datasets: [{
           label: 'Grafica de porcentaje del CPU ',
           data: [],
           backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
+          
             'rgba(255, 206, 86, 0.2)',
             'rgba(75, 192, 192, 0.2)',
             'rgba(153, 102, 255, 0.2)',
@@ -133,14 +132,14 @@
 
     let micanvas2 = document.getElementById('graficamemoriadisponible').getContext("2d")
     var chart2 = new Chart(micanvas2, {
-      type: 'bar',
+      type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Yellow', 'Green', 'Purple', 'Orange'],
         datasets: [{
           label: 'Grafica de Memoria disponible ',
           data: [],
           backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
+            
             'rgba(54, 162, 235, 0.2)',
             'rgba(255, 206, 86, 0.2)',
             'rgba(75, 192, 192, 0.2)',
