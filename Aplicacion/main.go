@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
+	rarchivos()
 
-	leerCpu()
 	server, err := socketio.NewServer(nil)
 	if err != nil {
 		log.Fatal(err)
@@ -60,23 +60,74 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("Serving at localhost:8000...")
 	log.Fatal(http.ListenAndServe(":8000", nil))
-
-
 }
 
 func rarchivos() {
     archivos, err := ioutil.ReadDir("/proc")
     if err != nil {
         log.Fatal(err)
-    }
+	}
+	cont := 0
+	cad := ""
     for _, archivo := range archivos {
-        fmt.Println("Nombre:", archivo.Name())
-        fmt.Println("Tamaño:", archivo.Size())
-        fmt.Println("Modo:", archivo.Mode())
-        fmt.Println("Ultima modificación:", archivo.ModTime())
-        fmt.Println("Es directorio?:", archivo.IsDir())
-        fmt.Println("-----------------------------------------")
-    }
+		if(archivo.IsDir()){
+			if(isNumeric(archivo.Name())){
+
+				conc := fmt.Sprintf( "/proc/%s/status" , archivo.Name())
+				/*fmt.Println("Nombre:", archivo.Name())
+				fmt.Println("Tamaño:", archivo.Size())
+				fmt.Println("Modo:", archivo.Mode())
+				fmt.Println("Ultima modificación:", archivo.ModTime())
+				fmt.Println("Es directorio?:", archivo.IsDir())*/
+				fmt.Println(conc)
+				fmt.Println("-----------------------------------------")
+				
+				bytesLeidos, err := ioutil.ReadFile(conc)
+				if err != nil {
+					fmt.Printf("Error leyendo archivo: %v", err)
+				}
+				contenido := string(bytesLeidos)
+			
+				split := strings.Split(contenido , "\n")
+
+				pid := "0"
+				ppid := "0"
+				uid := "0"
+				vmsize := "0"
+				name := "0"
+				state := "0"
+				for i := 0; i < len(split); i++ {
+					split2 := strings.Split(split[i], ":")
+					//fmt.Printf("--%s--\n", split2[0])
+					if len(split2) == 2 {
+						split2[1] = strings.TrimSpace(split2[1])
+					}
+					if split2[0] == "Pid" {
+						pid = split2[1]
+					} else if split2[0] == "PPid" {
+						ppid = split2[1]
+					}else if split2[0] == "Uid" {
+						uid = split2[1]
+					}else if split2[0] == "VmSize" {
+						vmsize = split2[1]
+					}else if split2[0] == "Name" {
+						name = split2[1]
+					}else if split2[0] == "State" {
+						state = split2[1]
+					}
+				}
+				if cont != 0 {
+					cad = fmt.Sprintf("%s," , cad)
+				}
+				cad = fmt.Sprintf("%s {\"pid\": \"%s\" , \"ppid\":\"%s\" , \"uid\":\"%s\" , \"vmsize\":\"%s\" , \"name\":\"%s\" , \"state\":\"%s\"}",cad, pid , ppid , uid , vmsize , name , state)
+
+				fmt.Println("-----------------------------------------")
+				cont = cont + 1
+			}
+		}
+	}
+	
+	fmt.Printf("[%s]\n" , cad)
 }
 
 func leerCpu() string{
@@ -149,4 +200,10 @@ func leerRam() string{
 	fmt.Println(ret)
  
 	return ret
+}
+
+
+func isNumeric(s string) bool {
+    _, err := strconv.ParseFloat(s, 64)
+    return err == nil
 }
