@@ -56,7 +56,7 @@
         </tr>
       </tbody>
     </table>
-    <button @click="refrescarproceso" onclick="bm()">Refrescar</button>
+    <!--<button @click="refrescarproceso" onclick="bm()">Refrescar</button> -->
       <table>
         <tr>
           <td>
@@ -78,6 +78,15 @@
 
   <script src="main.js"></script>
   <script>
+
+  setInterval('func()', 1000);
+
+  function func(){
+    vm.refrescarproceso()
+   
+    bm();
+  }
+
     function bm(){
       for(let i=0;i<vm.arraycpu.length;i++){
         chart1.data.datasets[0].data[i]=vm.arraycpu[i];
@@ -96,7 +105,7 @@
     var chart1 = new Chart(micanvas, {
       type: 'line',
       data: {
-        labels: ['Blue', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [1,2,3,4,5],
         datasets: [{
           label: 'Grafica de porcentaje del CPU ',
           data: [],
@@ -134,7 +143,7 @@
     var chart2 = new Chart(micanvas2, {
       type: 'line',
       data: {
-        labels: ['Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [1,2,3,4,5],
         datasets: [{
           label: 'Grafica de Memoria disponible ',
           data: [],
@@ -176,7 +185,7 @@
     var chart3 = new Chart(micanvas3, {
       type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: [1,2,3,4,5],
         datasets: [{
           label: 'Grafica de Memoria libre ',
           data: [],
