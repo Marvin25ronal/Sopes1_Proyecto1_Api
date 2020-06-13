@@ -36,9 +36,13 @@ func main() {
 		//rarchivos()
 		st1 := leerCpu()
 		st2 := leerRam()
-		st3 := fmt.Sprintf("{ %s %s }" , st1 , st2)
-		s.Emit("datos", st3)
-		return st3
+		///st3 := rarchivos()
+		str := fmt.Sprintf("{ %s %s  }" , st1 , st2 )
+		//,\"procesos\": %s
+		fmt.Println(str)
+
+		s.Emit("datos", str)
+		return str
 	})
 	
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
@@ -62,7 +66,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func rarchivos() {
+func rarchivos() string{
     archivos, err := ioutil.ReadDir("/proc")
     if err != nil {
         log.Fatal(err)
@@ -92,7 +96,7 @@ func rarchivos() {
 
 				pid := "0"
 				ppid := "0"
-				uid := "0"
+				uid := ""
 				vmsize := "0"
 				name := "0"
 				state := "0"
@@ -107,7 +111,17 @@ func rarchivos() {
 					} else if split2[0] == "PPid" {
 						ppid = split2[1]
 					}else if split2[0] == "Uid" {
-						uid = split2[1]
+						i := 0
+						uid2 := split2[1]
+						for  {
+							if(48 <= uid2[i] && uid2[i] <= 57 ){
+								uid = fmt.Sprintf("%s%c" , uid , uid2[i])
+								i = i + 1
+							}else{
+								break
+							}
+						}
+						fmt.Println(uid)
 					}else if split2[0] == "VmSize" {
 						vmsize = split2[1]
 					}else if split2[0] == "Name" {
@@ -123,11 +137,17 @@ func rarchivos() {
 
 				fmt.Println("-----------------------------------------")
 				cont = cont + 1
+
+				/*if(cont == 2){
+					break
+				}*/
 			}
 		}
 	}
 	
-	fmt.Printf("[%s]\n" , cad)
+	cad = fmt.Sprintf("[%s]\n" , cad)
+
+	return cad
 }
 
 func leerCpu() string{

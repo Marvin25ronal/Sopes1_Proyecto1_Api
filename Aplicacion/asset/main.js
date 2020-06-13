@@ -4,6 +4,8 @@ var vm=new Vue({
     el:'#cont',
     created(){
         socket.on("datos",(msg)=>{
+
+            console.log(msg);
             objJSON=JSON.parse(msg);
             this.cpu=objJSON.cpu;
             this.memoriadisponible=objJSON.memavailible/1000000;
