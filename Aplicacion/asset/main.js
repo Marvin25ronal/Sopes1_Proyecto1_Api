@@ -93,6 +93,10 @@ var vm=new Vue({
         pedirtabla(){
             console.log("pidiendo tabla")
             socket.emit('getproc','proc')
+        },
+        killprocess(msg){
+            console.log("Matando "+msg)
+            socket.emit('kill',msg);
         }
        
     }
