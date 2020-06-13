@@ -3,6 +3,9 @@ const socket=io();
 var vm=new Vue({
     el:'#cont',
     created(){
+        socket.on("proc",(msg)=>{
+            console.log(msg)
+        })
         socket.on("datos",(msg)=>{
 
             console.log(msg);
@@ -70,6 +73,10 @@ var vm=new Vue({
             console.log("mandando datos")
             socket.emit('getdatos',"datos")
         },
+        pedirtabla(){
+            console.log("pidiendo tabla")
+            socket.emit('getproc','proc')
+        }
        
     }
 })
