@@ -8,10 +8,17 @@ import (
 	"io/ioutil"
 	"strings"
 	"strconv"
+	"os/exec"
 )
 
 func main() {
-	rarchivos()
+	_, err := exec.Command("sh", "-c", "sudo -S pkill -SIGINT gnome-calculato").Output()
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(err)
+	}
 
 	server, err := socketio.NewServer(nil)
 	if err != nil {
@@ -117,10 +124,17 @@ func rarchivos() string{
 					split2 := strings.Split(split[i], ":")
 					//fmt.Printf("--%s--\n", split2[0])
 					if len(split2) == 2 {
+
+						split2[1] = strings.Replace(split2[1], "\t", " ",-1)
+
+
 						split2[1] = strings.TrimSpace(split2[1])
 					}
 					if split2[0] == "Pid" {
 						pid = split2[1]
+
+
+
 					} else if split2[0] == "PPid" {
 						ppid = split2[1]
 					}else if split2[0] == "Uid" {
@@ -158,6 +172,7 @@ func rarchivos() string{
 		}
 	}
 	
+	cad = strings.Replace(cad , "\t" , "" , -1)
 	cad = fmt.Sprintf("[%s]\n" , cad)
 
 	return cad

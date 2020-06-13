@@ -36,29 +36,35 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">PID</th>
+                        <th scope="col">UID</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Estado</th>
                         <th scope="col">% utilizadon Ram</th>
-                        <th scope="col">Acciones</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">PPID</th>
+                        <th scope="col">Estado</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="proceso in procesos">
-                        <td >
-                            {{proceso.pdi}}
+                        <td :id="'p' + proceso.pid">
+                            {{proceso.pid}}
                         </td>
-                        <td >
-                            {{proceso.nombre}}
+                        <td>
+                            {{proceso.uid}}
                         </td>
-                        <td >
-                            {{proceso.usuario}}
+                      
+                        <td>
+                            {{proceso.name}}
                         </td>
-                        <td >
-                            {{proceso.estado}}
+                        <td>
+                            {{proceso.vmsize}}
                         </td>
-                        <td >
-                            {{proceso.ram}}
+                        <td>
+                            {{proceso.state}}
+                        </td>
+                        <td>
+                            
+                            <a :href="'#p' + proceso.ppid" >{{proceso.ppid}}</a>
                         </td>
                         <td>
                             <button @click="terminarproceso" class="btn btn-warning">Terminar</button>
@@ -69,7 +75,32 @@
 
         </div>
     </div>
+
     <script src="main.js"></script>
+
+
+    <script>
+
+        var datosP = [];
+        var mj = [];
+        
+
+        setTimeout(function () {
+            ini();
+        }, 500);
+        function ini() {
+            if (mj.length == 0) {
+                vm.pedirtabla();
+                setTimeout(function () {
+                    ini();
+                }, 500);
+                return;
+            }
+        }
+
+
+
+    </script>
 </body>
 
 </html>

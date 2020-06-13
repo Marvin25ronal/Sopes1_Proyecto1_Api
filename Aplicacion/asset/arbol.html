@@ -12,10 +12,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 
+
+    <style>
+        .demo {
+            overflow: auto;
+            border: 1px solid silver;
+            min-height: 100px;
+        }
+    </style>
+    <link rel="stylesheet" href="default/style.min.css" />
 </head>
 
 <body>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -31,42 +40,126 @@
                 </li>
             </ul>
         </div>
+
+        <br/>
+        <br/>
+        <br/>
+        <hr/>
+        --------------------
     </nav>
 
 
     <div class="container mt-5">
+        <h1>Inline data demo</h1>
+        <div id="data" class="demo"></div>
 
-        <div id="cont">
-            <h1 align="center" class="display-1">Arbol de procesos</h1>
-            <div id="jstree">
-               
-            </div>
-            <button @click="refrescararbol">HH</button>
-            <div id="jstree_demo_div"></div>
-        </div>
     </div>
-    <script src="main.js"></script>
+
+    <script src="dist/jstree.min.js"></script>
+
     <script>
-        function crear(){
-            $(function () {
-            // 6 create an instance when the DOM is ready
-            var arr=vm.getarbol();
-            $('#jstree').jstree({
-                'core': {
-                    'data': [
-                        arr
+        // html demo
+
+
+        var data = {
+            'data': [
+                {
+                    "text": "Root node", "state": { "opened": true },
+                    "children": [
+                        { "text": "Child node 1" },
+                        { "text": "Child node 2" }
                     ]
                 }
+            ]
+        };
+
+
+        function setTree() {
+
+            // inline data demo
+            $('#data').jstree({
+                'core': data
             });
-            // 8 interact with the tree - either way is OK
-            $('button').on('click', function () {
-                $('#jstree').jstree(true).select_node('child_node_1');
-                $('#jstree').jstree('select_node', 'child_node_1');
-                $.jstree.reference('#jstree').select_node('child_node_1');
-            });
-        });
         }
-       
+
+
+    </script>
+
+
+    <script src="main.js"></script>
+    <script>
+
+
+        var datosP = [];
+        var mj = [];
+
+        vm.pedirtabla();
+
+
+        setTimeout(function () {
+            ini();
+        }, 500);
+        function ini() {
+            if (mj.length == 0) {
+                vm.pedirtabla();
+                setTimeout(function () {
+                    ini();
+                }, 500);
+                return;
+            }
+            ini2();
+        }
+
+        var aid = []; 
+        var ard = []; 
+        var aru = [];
+
+        function ini2() {
+            var data2 = [];
+        
+            var dato = {}; 
+            dato.text = mj[0].name + " " + mj[0].state;
+            data2.push(dato);
+
+            var idDato = [mj[0].pid];
+            var arrDato = [dato];
+            var arrus = [false];
+            
+            for(var a = 1; a < mj.length; a++){
+                var ndato = {}; 
+                ndato.text = mj[a].name + " " + mj[a].state;
+               
+                idDato.push(mj[a].pid);
+                arrDato.push(ndato);
+
+                var n = idDato.indexOf(mj[a].ppid);
+                var vdato = arrDato[n];
+                if(mj[a].ppid == 0){
+                    data2.push(ndato); 
+                    continue; 
+                }
+                if(n == -1){
+                    console.log("ppid " + mj[a].ppid)
+                    continue;
+                }
+                if(!arrus[n]){
+                    arrus[n] = true; 
+                    vdato.state = { "opened": true }
+                    vdato.children = []; 
+                }
+
+                vdato.children.push(ndato);
+            } 
+            aid = idDato;
+            ard = arrDato; 
+            aru = arrus;
+
+            data.data = data2; 
+
+            setTree();
+        }
+
+
     </script>
 </body>
 

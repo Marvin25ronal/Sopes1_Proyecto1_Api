@@ -4,7 +4,30 @@ var vm=new Vue({
     el:'#cont',
     created(){
         socket.on("proc",(msg)=>{
-            console.log(msg)
+            console.log(msg);
+            datosP = JSON.parse(msg);
+
+
+            mj = datosP.proc;
+            for (var a = 0; a < mj.length; a++) {
+                mj[a].pid = parseInt(mj[a].pid);
+                mj[a].ppid = parseInt(mj[a].ppid);
+                //mj[a].vmsize = parseInt(mj[a].vmsize);
+            }
+
+            var len = mj.length;
+            for (var i = 0; i < len; i++) {
+                for (var j = 0; j < len - 1; j++) {
+                    if (mj[j].pid > mj[j + 1].pid) {
+                        var tmp = mj[j];
+                        mj[j] = mj[j + 1];
+                        mj[j + 1] = tmp;
+                    }
+                }
+            }
+            
+            this.procesos = mj;
+            
         })
         socket.on("datos",(msg)=>{
 
@@ -54,13 +77,7 @@ var vm=new Vue({
         arraymemorialibre:[],
         arbol:[],
         procesos:[
-            {
-                pdi:1,
-                nombre:"n",
-                usuario:"uer",
-                estado:"est",
-                ram:"10"
-            }
+         
         ]
     },
     methods:{
