@@ -2,23 +2,17 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/googollee/go-socket.io"
-	"io/ioutil"
-	"strings"
-	"strconv"
 	"os/exec"
+	"strconv"
+	"strings"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
-	_, err := exec.Command("sh", "-c", "sudo -S pkill -SIGINT gnome-calculato").Output()
-
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(err)
-	}
 
 	server, err := socketio.NewServer(nil)
 	if err != nil {
@@ -38,13 +32,24 @@ func main() {
 		s.SetContext(msg)
 		return "recv " + msg
 	})
+	server.OnEvent("/", "kill", func(s socketio.Conn, msg string) string {
+		hola := fmt.Sprintf("sudo -S pkill -SIGINT %s", msg)
+		_, err := exec.Command("sh", "-c", hola).Output()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(err)
+		}
+		s.SetContext(msg)
+		return "recv " + msg
+	})
 	server.OnEvent("/", "getdatos", func(s socketio.Conn, msg string) string {
 		//log.Println(msg)
 		//rarchivos()
 		st1 := leerCpu()
 		st2 := leerRam()
 		///st3 := rarchivos()
-		str := fmt.Sprintf("{ %s %s  }" , st1 , st2 )
+		str := fmt.Sprintf("{ %s %s  }", st1, st2)
 		//,\"procesos\": %s
 		fmt.Println(str)
 
@@ -55,16 +60,16 @@ func main() {
 	server.OnEvent("/", "getproc", func(s socketio.Conn, msg string) string {
 		//log.Println(msg)
 		//rarchivos()
-		
+
 		st3 := rarchivos()
-		str := fmt.Sprintf("{ \"proc\": %s  }" , st3 )
+		str := fmt.Sprintf("{ \"proc\": %s  }", st3)
 		//,\"procesos\": %s
 		fmt.Println(str)
 
 		s.Emit("proc", str)
 		return str
 	})
-	
+
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
 		last := s.Context().(string)
 		s.Emit("bye", last)
@@ -86,18 +91,18 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
-func rarchivos() string{
-    archivos, err := ioutil.ReadDir("/proc")
-    if err != nil {
-        log.Fatal(err)
+func rarchivos() string {
+	archivos, err := ioutil.ReadDir("/proc")
+	if err != nil {
+		log.Fatal(err)
 	}
 	cont := 0
 	cad := ""
-    for _, archivo := range archivos {
-		if(archivo.IsDir()){
-			if(isNumeric(archivo.Name())){
+	for _, archivo := range archivos {
+		if archivo.IsDir() {
+			if isNumeric(archivo.Name()) {
 
-				conc := fmt.Sprintf( "/proc/%s/status" , archivo.Name())
+				conc := fmt.Sprintf("/proc/%s/status", archivo.Name())
 				/*fmt.Println("Nombre:", archivo.Name())
 				fmt.Println("Tamaño:", archivo.Size())
 				fmt.Println("Modo:", archivo.Mode())
@@ -105,14 +110,14 @@ func rarchivos() string{
 				fmt.Println("Es directorio?:", archivo.IsDir())*/
 				fmt.Println(conc)
 				fmt.Println("-----------------------------------------")
-				
+
 				bytesLeidos, err := ioutil.ReadFile(conc)
 				if err != nil {
 					fmt.Printf("Error leyendo archivo: %v", err)
 				}
 				contenido := string(bytesLeidos)
-			
-				split := strings.Split(contenido , "\n")
+
+				split := strings.Split(contenido, "\n")
 
 				pid := "0"
 				ppid := "0"
@@ -125,42 +130,39 @@ func rarchivos() string{
 					//fmt.Printf("--%s--\n", split2[0])
 					if len(split2) == 2 {
 
-						split2[1] = strings.Replace(split2[1], "\t", " ",-1)
-
+						split2[1] = strings.Replace(split2[1], "\t", " ", -1)
 
 						split2[1] = strings.TrimSpace(split2[1])
 					}
 					if split2[0] == "Pid" {
 						pid = split2[1]
 
-
-
 					} else if split2[0] == "PPid" {
 						ppid = split2[1]
-					}else if split2[0] == "Uid" {
+					} else if split2[0] == "Uid" {
 						i := 0
 						uid2 := split2[1]
-						for  {
-							if(48 <= uid2[i] && uid2[i] <= 57 ){
-								uid = fmt.Sprintf("%s%c" , uid , uid2[i])
+						for {
+							if 48 <= uid2[i] && uid2[i] <= 57 {
+								uid = fmt.Sprintf("%s%c", uid, uid2[i])
 								i = i + 1
-							}else{
+							} else {
 								break
 							}
 						}
 						fmt.Println(uid)
-					}else if split2[0] == "VmSize" {
+					} else if split2[0] == "VmSize" {
 						vmsize = split2[1]
-					}else if split2[0] == "Name" {
+					} else if split2[0] == "Name" {
 						name = split2[1]
-					}else if split2[0] == "State" {
+					} else if split2[0] == "State" {
 						state = split2[1]
 					}
 				}
 				if cont != 0 {
-					cad = fmt.Sprintf("%s," , cad)
+					cad = fmt.Sprintf("%s,", cad)
 				}
-				cad = fmt.Sprintf("%s {\"pid\": \"%s\" , \"ppid\":\"%s\" , \"uid\":\"%s\" , \"vmsize\":\"%s\" , \"name\":\"%s\" , \"state\":\"%s\"}",cad, pid , ppid , uid , vmsize , name , state)
+				cad = fmt.Sprintf("%s {\"pid\": \"%s\" , \"ppid\":\"%s\" , \"uid\":\"%s\" , \"vmsize\":\"%s\" , \"name\":\"%s\" , \"state\":\"%s\"}", cad, pid, ppid, uid, vmsize, name, state)
 
 				fmt.Println("-----------------------------------------")
 				cont = cont + 1
@@ -171,24 +173,24 @@ func rarchivos() string{
 			}
 		}
 	}
-	
-	cad = strings.Replace(cad , "\t" , "" , -1)
-	cad = fmt.Sprintf("[%s]\n" , cad)
+
+	cad = strings.Replace(cad, "\t", "", -1)
+	cad = fmt.Sprintf("[%s]\n", cad)
 
 	return cad
 }
 
-func leerCpu() string{
+func leerCpu() string {
 	nombreArchivo := "/proc/stat"
 	bytesLeidos, err := ioutil.ReadFile(nombreArchivo)
 	if err != nil {
 		fmt.Printf("Error leyendo archivo: %v", err)
 	}
 	contenido := string(bytesLeidos)
-	
+
 	split := strings.Split(contenido, "\n")
 
-	split2 := strings.Split(split[0] , " ")
+	split2 := strings.Split(split[0], " ")
 
 	/*fmt.Println(split[0])
 	fmt.Println("1-" + split2[2])
@@ -196,20 +198,20 @@ func leerCpu() string{
 	fmt.Println("3-" + split2[5])
 
 	fmt.Println("......")*/
-	s2 , err := strconv.ParseFloat(split2[2],64)
-	s4 , err := strconv.ParseFloat(split2[4],64)
-	s5 , err := strconv.ParseFloat(split2[5],64)
+	s2, err := strconv.ParseFloat(split2[2], 64)
+	s4, err := strconv.ParseFloat(split2[4], 64)
+	s5, err := strconv.ParseFloat(split2[5], 64)
 
-	res := (s2 + s4)*100/(s2+s4+s5)
+	res := (s2 + s4) * 100 / (s2 + s4 + s5)
 
-	res2 := fmt.Sprintf("\"cpu\": %f," , res)
-	
+	res2 := fmt.Sprintf("\"cpu\": %f,", res)
+
 	fmt.Println(res2)
 
 	return res2
 }
 
-func leerRam() string{
+func leerRam() string {
 	nombreArchivo := "/proc/meminfo"
 	bytesLeidos, err := ioutil.ReadFile(nombreArchivo)
 	if err != nil {
@@ -227,31 +229,30 @@ func leerRam() string{
 		split2 := strings.Split(split[i], ":")
 		//fmt.Printf("--%s--\n", split2[0])
 		if split2[0] == "MemTotal" {
-			split2[1] = strings.Replace(split2[1], "kB", "",-1)
-			split2[1] = strings.Replace(split2[1], " ", "",-1)
-			mtotal , err = strconv.Atoi(split2[1])
+			split2[1] = strings.Replace(split2[1], "kB", "", -1)
+			split2[1] = strings.Replace(split2[1], " ", "", -1)
+			mtotal, err = strconv.Atoi(split2[1])
 		} else if split2[0] == "MemFree" {
-			split2[1] = strings.Replace(split2[1], "kB", "",-1)
-			split2[1] = strings.Replace(split2[1], " ", "",-1)
-			mfree , err = strconv.Atoi(split2[1])
+			split2[1] = strings.Replace(split2[1], "kB", "", -1)
+			split2[1] = strings.Replace(split2[1], " ", "", -1)
+			mfree, err = strconv.Atoi(split2[1])
 		} else if split2[0] == "MemAvailable" {
-			split2[1] = strings.Replace(split2[1], "kB", "",-1)
-			split2[1] = strings.Replace(split2[1], " ", "",-1)
-			mdisp , err = strconv.Atoi(split2[1])
-		} 
+			split2[1] = strings.Replace(split2[1], "kB", "", -1)
+			split2[1] = strings.Replace(split2[1], " ", "", -1)
+			mdisp, err = strconv.Atoi(split2[1])
+		}
 	}
 
 	//ret := "{\"memtotal:" + mtotal + ",memfree:" + mfree + ",memavailible:" + mdisp + "}"
 
-	ret := fmt.Sprintf("\"memtotal\":%d, \"memfree\": %d,\"memavailible\": %d " , mtotal , mfree , mdisp)
+	ret := fmt.Sprintf("\"memtotal\":%d, \"memfree\": %d,\"memavailible\": %d ", mtotal, mfree, mdisp)
 
 	fmt.Println(ret)
- 
+
 	return ret
 }
 
-
 func isNumeric(s string) bool {
-    _, err := strconv.ParseFloat(s, 64)
-    return err == nil
+	_, err := strconv.ParseFloat(s, 64)
+	return err == nil
 }
