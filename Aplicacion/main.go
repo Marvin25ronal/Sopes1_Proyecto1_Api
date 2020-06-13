@@ -44,6 +44,19 @@ func main() {
 		s.Emit("datos", str)
 		return str
 	})
+
+	server.OnEvent("/", "getproc", func(s socketio.Conn, msg string) string {
+		//log.Println(msg)
+		//rarchivos()
+		
+		st3 := rarchivos()
+		str := fmt.Sprintf("{ \"proc\": %s  }" , st3 )
+		//,\"procesos\": %s
+		fmt.Println(str)
+
+		s.Emit("proc", str)
+		return str
+	})
 	
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
 		last := s.Context().(string)
