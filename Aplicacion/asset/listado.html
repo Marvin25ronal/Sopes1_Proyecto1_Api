@@ -35,6 +35,24 @@
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
+                        <th scope="col">Proceos en ejecucion</th>
+                        <th scope="col">Procesos suspendidos</th>
+                        <th scope="col">Procesos detenidos</th>
+                        <th scope="col">Procesos Zombie</th>
+                        <th scope="col">Procesos Totales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td>{{procexe}}</td>
+                    <td>{{procsleep}}</td>
+                    <td>{{procstoped}}</td>
+                    <td>{{proczombie}}</td>
+                    <td>{{proctotal}}</td>
+                </tbody>
+            </table>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
                         <th scope="col">PID</th>
                         <th scope="col">UID</th>
                         <th scope="col">Nombre</th>

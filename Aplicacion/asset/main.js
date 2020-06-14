@@ -25,7 +25,7 @@ var vm=new Vue({
                     }
                 }
             }
-            
+            this.contarprocesos(mj)
             this.procesos = mj;
             
         })
@@ -75,6 +75,11 @@ var vm=new Vue({
         memoriatotal:0,
         memorialibre:0,
         arraymemorialibre:[],
+        procexe:0,
+        procsleep:0,
+        proczombie:0,
+        proctotal:0,
+        procstoped:0,
         arbol:[],
         procesos:[
          
@@ -97,6 +102,25 @@ var vm=new Vue({
         killprocess(msg){
             console.log("Matando "+msg)
             socket.emit('kill',msg);
+        },
+        contarprocesos(pr){
+            this.procsleep=0;
+            this.procexe=0;
+            this.procstoped=0;
+            this.proctotal=0;
+            this.proczombie=0;
+            for(let i=0;i<pr.length;i++){
+                if(pr[i].state=="S (sleeping)"){
+                    this.procsleep++;
+                }else if(pr[i].state=="R (running)"){
+                    this.procexe++;
+                }else if(pr[i].state=="I (idle)"){
+                    this.procstoped++;
+                }else if(pr[i].state=="Z (zombie)"){
+                    this.proczombie++;
+                }
+            }
+            this.proctotal=this.procsleep+this.procexe+this.procstoped+this.proczombie
         }
        
     }
