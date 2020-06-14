@@ -33,9 +33,13 @@ func main() {
 		return "recv " + msg
 	})
 	server.OnEvent("/", "kill", func(s socketio.Conn, msg string) string {
+		fmt.Println("----------------------jjjjjj")
+	
 		hola := fmt.Sprintf("sudo -S pkill -SIGINT %s", msg)
 		_, err := exec.Command("sh", "-c", hola).Output()
+		fmt.Println(hola)
 		if err != nil {
+			fmt.Println("errrooor :(")
 			fmt.Println(err)
 		} else {
 			fmt.Println(err)
@@ -51,7 +55,7 @@ func main() {
 		///st3 := rarchivos()
 		str := fmt.Sprintf("{ %s %s  }", st1, st2)
 		//,\"procesos\": %s
-		fmt.Println(str)
+		//fmt.Println(str)
 
 		s.Emit("datos", str)
 		return str
@@ -64,7 +68,7 @@ func main() {
 		st3 := rarchivos()
 		str := fmt.Sprintf("{ \"proc\": %s  }", st3)
 		//,\"procesos\": %s
-		fmt.Println(str)
+		//fmt.Println(str)
 
 		s.Emit("proc", str)
 		return str

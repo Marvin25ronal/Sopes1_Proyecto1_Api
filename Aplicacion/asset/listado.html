@@ -67,7 +67,7 @@
                             <a :href="'#p' + proceso.ppid" >{{proceso.ppid}}</a>
                         </td>
                         <td>
-                            <button @click="terminarproceso" class="btn btn-warning">Terminar</button>
+                            <button  :onclick="'matando( \''+proceso.name+'\')'" class="btn btn-warning">Terminar</button>
                         </td>
                     </tr>
                 </tbody>
@@ -99,6 +99,10 @@
         }
 
 
+        function matando(p){
+            console.log("vamo a matar a " + p)
+            vm.killprocess(p);
+        }
 
     </script>
 </body>
