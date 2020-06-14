@@ -7,12 +7,38 @@ var vm=new Vue({
             console.log(msg);
             datosP = JSON.parse(msg);
 
+            var usr = datosP.users;
+            var nus = []; 
+            var idus = [];
+
+            var mtotal = datosP.memtotal;
+
+            for(var a = 0; a < usr.length; a++){
+                nus.push(usr[a].us);
+                idus.push(usr[a].id);
+            }
+
+       
+
+           
 
             mj = datosP.proc;
             for (var a = 0; a < mj.length; a++) {
                 mj[a].pid = parseInt(mj[a].pid);
                 mj[a].ppid = parseInt(mj[a].ppid);
-                //mj[a].vmsize = parseInt(mj[a].vmsize);
+                mj[a].vmsize = parseInt(mj[a].vmsize);
+                mj[a].uid = parseInt(mj[a].uid);
+
+
+                mj[a].porcentaje = Math.trunc( (mj[a].vmsize  / mtotal) * 10000);
+
+                mj[a].porcentaje = mj[a].porcentaje / 100;
+                var n = idus.indexOf(mj[a].uid);
+                if( n == -1){
+                    mj[a].nus = "--";
+                }else{
+                    mj[a].nus = nus[n];
+                }
             }
 
             var len = mj.length;
@@ -34,9 +60,12 @@ var vm=new Vue({
             console.log(msg);
             objJSON=JSON.parse(msg);
             this.cpu=objJSON.cpu;
-            this.memoriadisponible=objJSON.memavailible/1000000;
-            this.memoriatotal=objJSON.memtotal/1000000;
-            this.memorialibre=objJSON.memfree/1000000;
+
+            var ndiv = 1024;
+
+            this.memoriadisponible=objJSON.memavailible/ndiv;
+            this.memoriatotal=objJSON.memtotal/ndiv;
+            this.memorialibre=objJSON.memfree/ndiv;
             if(this.arraycpu.length==5){
                 this.arraycpu[0]=this.arraycpu[1];
                 this.arraycpu[1]=this.arraycpu[2];

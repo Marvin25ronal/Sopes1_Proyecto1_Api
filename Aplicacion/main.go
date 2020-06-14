@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-
 	server, err := socketio.NewServer(nil)
 	if err != nil {
 		log.Fatal(err)
@@ -64,9 +63,11 @@ func main() {
 	server.OnEvent("/", "getproc", func(s socketio.Conn, msg string) string {
 		//log.Println(msg)
 		//rarchivos()
-
+		st1 := fus()
+		st2 := leerRam()
+		
 		st3 := rarchivos()
-		str := fmt.Sprintf("{ \"proc\": %s  }", st3)
+		str := fmt.Sprintf("{ \"proc\": %s , %s , \"users\" : %s}", st3 , st2, st1)
 		//,\"procesos\": %s
 		//fmt.Println(str)
 
@@ -93,6 +94,36 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("Serving at localhost:8000...")
 	log.Fatal(http.ListenAndServe(":8000", nil))
+}
+
+
+func fus() string{
+	nombreArchivo := "/etc/passwd"
+	bytesLeidos, err := ioutil.ReadFile(nombreArchivo)
+	if err != nil {
+		fmt.Printf("Error leyendo archivo: %v", err)
+	}
+	contenido := string(bytesLeidos)
+
+	split := strings.Split(contenido, "\n")
+
+	cad := "["
+	for a := 0; a < len(split); a++ {
+		split2 := strings.Split(split[a], ":")
+		if(len(split2) < 2){
+			continue
+		}
+
+		if a != 0 {
+			cad = fmt.Sprintf("%s,", cad)
+		}
+
+		cad = fmt.Sprintf("%s {\"us\":\"%s\" , \"id\": %s }" , cad , split2[0],split2[2])
+	}
+	cad = fmt.Sprintf("%s]" , cad)
+	fmt.Println(cad)
+
+	return cad;
 }
 
 func rarchivos() string {
@@ -156,7 +187,9 @@ func rarchivos() string {
 						}
 						fmt.Println(uid)
 					} else if split2[0] == "VmSize" {
-						vmsize = split2[1]
+						vmsize = strings.Replace(split2[1], " kB", "", -1)
+
+						//vmsize = split2[1]
 					} else if split2[0] == "Name" {
 						name = split2[1]
 					} else if split2[0] == "State" {
