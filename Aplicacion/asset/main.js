@@ -91,6 +91,15 @@ var vm=new Vue({
             }else{
                 this.arraymemorialibre.push(this.memorialibre)
             }
+            this.porcentajeram=((this.memoriatotal-this.memorialibre) / this.memoriatotal)*100
+            if(this.arrayram.length==6){
+                for(let i=0;i<this.arrayram.length-1;i++){
+                    this.arrayram[i]=this.arrayram[i+1];
+                }
+                this.arrayram[this.arrayram.length-1]=this.porcentajeram
+            }else{
+                this.arrayram.push(this.porcentajeram)
+            }
            
         })
         
@@ -104,6 +113,8 @@ var vm=new Vue({
         memoriatotal:0,
         memorialibre:0,
         arraymemorialibre:[],
+        arrayram:[],
+        porcentajeram:0,
         procexe:0,
         procsleep:0,
         proczombie:0,
