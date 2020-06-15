@@ -4,3 +4,6 @@ Este proyecto consta de una aplicacion de backend en la cual brinda informacion 
 <img src="https://www.hardwinsoftware.com/blog/wp-content/uploads/2018/02/golang-gopher.png" width=50% height=50%>
 
 En la carpeta Aplicacion incluye todo el codigo a ejecutar.
+
+>El codigo a utilizar es 
+>go run main.go
